@@ -1,0 +1,686 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#0a1220">
+
+<title>SpamGuard - Email Security</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap');
+
+:root {
+    --bg: #0a1220;
+    --panel: #111e30;
+    --panel2: #192a40;
+    --amber: #E8A33D;
+    --text: #E9ECF1;
+    --muted: #8FA0B4;
+    --green: #55C69A;
+    --red: #EF7777;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, sans-serif;
+    min-height: 100vh;
+}
+
+.app {
+    max-width: 600px;
+    margin: auto;
+    min-height: 100vh;
+    padding: 25px 18px 100px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.logo {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 27px;
+    font-weight: 700;
+    color: var(--amber);
+}
+
+.status {
+    font-size: 11px;
+    color: var(--green);
+    background: #18352f;
+    padding: 8px 12px;
+    border-radius: 20px;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.heading {
+    margin-bottom: 22px;
+}
+
+.heading small {
+    color: var(--amber);
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+.heading h1 {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 32px;
+    margin-top: 8px;
+}
+
+.heading p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 8px;
+    line-height: 1.6;
+}
+
+.card {
+    background: var(--panel);
+    border: 1px solid #24354a;
+    border-radius: 17px;
+    padding: 20px;
+    margin-bottom: 17px;
+}
+
+.card-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+.card-description {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+    margin-bottom: 17px;
+}
+
+textarea {
+    width: 100%;
+    min-height: 145px;
+    background: #0a1220;
+    border: 1px solid #34465c;
+    border-radius: 11px;
+    padding: 15px;
+    color: white;
+    font-family: Inter, sans-serif;
+    font-size: 14px;
+    resize: vertical;
+    outline: none;
+}
+
+textarea:focus {
+    border-color: var(--amber);
+}
+
+textarea::placeholder {
+    color: #64748b;
+}
+
+button {
+    cursor: pointer;
+    font-family: Inter, sans-serif;
+}
+
+.analyze {
+    width: 100%;
+    padding: 14px;
+    margin-top: 14px;
+    border: none;
+    border-radius: 10px;
+    background: var(--amber);
+    color: #172033;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.analyze:active {
+    transform: scale(.98);
+}
+
+.clear {
+    width: 100%;
+    margin-top: 10px;
+    padding: 11px;
+    background: transparent;
+    border: 1px solid #34465c;
+    border-radius: 10px;
+    color: var(--muted);
+}
+
+.result {
+    margin-top: 17px;
+    padding: 18px;
+    border-radius: 12px;
+    line-height: 1.7;
+}
+
+.result.spam {
+    background: #42252c;
+    border: 1px solid #91404a;
+}
+
+.result.ham {
+    background: #19392f;
+    border: 1px solid #367b61;
+}
+
+.result.error {
+    background: #42252c;
+    border: 1px solid #91404a;
+}
+
+.result h3 {
+    font-size: 17px;
+    margin-bottom: 5px;
+}
+
+.result p {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.stat {
+    background: var(--panel);
+    padding: 20px;
+    border-radius: 14px;
+    border: 1px solid #24354a;
+}
+
+.stat h2 {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 32px;
+    color: var(--amber);
+}
+
+.stat p {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.stat.safe h2 {
+    color: var(--green);
+}
+
+.stat.spam-stat h2 {
+    color: var(--red);
+}
+
+.section-title {
+    font-size: 18px;
+    margin: 25px 0 13px;
+}
+
+.history-item {
+    background: var(--panel);
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #24354a;
+    overflow-wrap: anywhere;
+}
+
+.history-item p {
+    color: var(--muted);
+    font-size: 12px;
+    margin: 7px 0;
+}
+
+.history-item small {
+    color: var(--muted);
+}
+
+.tag {
+    font-size: 10px;
+    padding: 5px 9px;
+    border-radius: 20px;
+}
+
+.tag.spam {
+    background: #42252c;
+    color: #ff9292;
+}
+
+.tag.ham {
+    background: #19392f;
+    color: #70d9ad;
+}
+
+.feature {
+    background: var(--panel);
+    padding: 17px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #24354a;
+}
+
+.feature h3 {
+    color: var(--amber);
+    font-size: 14px;
+    margin-bottom: 7px;
+}
+
+.feature p {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 600px;
+    background: #0c1727;
+    border-top: 1px solid #24354a;
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 5px calc(12px + env(safe-area-inset-bottom));
+}
+
+.nav-button {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 11px;
+    padding: 5px;
+}
+
+.nav-button span {
+    display: block;
+    font-size: 21px;
+    margin-bottom: 5px;
+}
+
+.nav-button.active {
+    color: var(--amber);
+}
+
+.empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 30px 10px;
+    font-size: 13px;
+}
+
+footer {
+    text-align: center;
+    color: #64748b;
+    font-size: 10px;
+    margin-top: 35px;
+}
+
+@media(min-width: 650px) {
+    .app {
+        padding-top: 40px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+    <div class="logo">✦ SpamGuard</div>
+    <div class="status">● SECURITY ACTIVE</div>
+</header>
+
+<!-- HOME PAGE -->
+
+<section id="home" class="page active">
+
+    <div class="heading">
+        <small>EMAIL SECURITY SYSTEM</small>
+        <h1>Welcome to SpamGuard</h1>
+        <p>Smart message protection powered by Machine Learning.</p>
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">Analyze your message</div>
+
+        <div class="card-description">
+            Enter an email or message to identify whether it is spam or legitimate.
+        </div>
+
+        <form action="{{ url_for('predict') }}" method="POST">
+
+            <textarea
+                name="message"
+                placeholder="Type or paste your message here..."
+                required>{{ message if message else '' }}</textarea>
+
+            <button class="analyze" type="submit">
+                ✦ Analyze Message
+            </button>
+
+        </form>
+
+        <button class="clear" onclick="clearMessage()">
+            Clear Message
+        </button>
+
+        {% if result %}
+
+        <div class="result {% if result_type == 'spam' %}spam{% elif result_type == 'ham' %}ham{% else %}error{% endif %}">
+
+            <h3>{{ result }}</h3>
+
+            {% if spam_score is defined %}
+            <p>Spam probability: {{ spam_score }}%</p>
+            {% endif %}
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    <h2 class="section-title">Detection Overview</h2>
+
+    <div class="stats">
+
+        <div class="stat">
+            <h2 id="totalCount">0</h2>
+            <p>Total messages checked</p>
+        </div>
+
+        <div class="stat spam-stat">
+            <h2 id="spamCount">0</h2>
+            <p>Spam detected</p>
+        </div>
+
+        <div class="stat safe">
+            <h2 id="safeCount">0</h2>
+            <p>Legitimate messages</p>
+        </div>
+
+        <div class="stat">
+            <h2 id="spamRate">0%</h2>
+            <p>Spam detection rate</p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- HISTORY PAGE -->
+
+<section id="history" class="page">
+
+    <div class="heading">
+        <small>YOUR ACTIVITY</small>
+        <h1>Detection History</h1>
+        <p>Review your previously analyzed messages.</p>
+    </div>
+
+    <div id="historyList"></div>
+
+    <button class="clear" onclick="clearHistory()">
+        Clear All History
+    </button>
+
+</section>
+
+
+<!-- ABOUT PAGE -->
+
+<section id="about" class="page">
+
+    <div class="heading">
+        <small>ABOUT THE PROJECT</small>
+        <h1>How SpamGuard Works</h1>
+        <p>An intelligent email classification system using Machine Learning.</p>
+    </div>
+
+    <div class="feature">
+        <h3>01. Python</h3>
+        <p>Python is used to build the backend and execute the prediction process.</p>
+    </div>
+
+    <div class="feature">
+        <h3>02. TF-IDF Vectorization</h3>
+        <p>Converts message text into numerical features for machine learning.</p>
+    </div>
+
+    <div class="feature">
+        <h3>03. Naive Bayes Classifier</h3>
+        <p>Uses the trained classification model to identify spam and legitimate messages.</p>
+    </div>
+
+    <div class="feature">
+        <h3>04. Flask Framework</h3>
+        <p>Connects the website interface with the Python machine learning model.</p>
+    </div>
+
+    <div class="feature">
+        <h3>Project Objective</h3>
+        <p>To identify unwanted and suspicious messages using machine learning and natural language processing.</p>
+    </div>
+
+</section>
+
+<footer>
+    SPAMGUARD · EMAIL SPAM DETECTION · MACHINE LEARNING
+</footer>
+
+</div>
+
+
+<!-- BOTTOM NAVIGATION -->
+
+<nav class="bottom-nav">
+
+    <button class="nav-button active" onclick="showPage('home', this)">
+        <span>⌂</span>Home
+    </button>
+
+    <button class="nav-button" onclick="showPage('history', this)">
+        <span>◷</span>History
+    </button>
+
+    <button class="nav-button" onclick="showPage('about', this)">
+        <span>ⓘ</span>About
+    </button>
+
+</nav>
+
+
+<script>
+
+// Page navigation
+
+function showPage(page, button) {
+
+    document.querySelectorAll('.page').forEach(p => {
+        p.classList.remove('active');
+    });
+
+    document.getElementById(page).classList.add('active');
+
+    document.querySelectorAll('.nav-button').forEach(b => {
+        b.classList.remove('active');
+    });
+
+    button.classList.add('active');
+
+    if(page === 'history') {
+        displayHistory();
+    }
+
+    window.scrollTo(0, 0);
+}
+
+
+// Message clearing
+
+function clearMessage() {
+
+    document.querySelector('textarea').value = '';
+
+}
+
+
+// Load history
+
+let historyData = JSON.parse(
+    localStorage.getItem('spamguardHistory') || '[]'
+);
+
+
+// Save actual Flask prediction
+
+{% if result_type == 'spam' or result_type == 'ham' %}
+
+const newRecord = {
+    message: {{ message|tojson }},
+    result: {{ result|tojson }},
+    type: {{ result_type|tojson }},
+    score: {{ spam_score|tojson }},
+    time: new Date().toLocaleString()
+};
+
+historyData.unshift(newRecord);
+
+historyData = historyData.slice(0, 100);
+
+localStorage.setItem(
+    'spamguardHistory',
+    JSON.stringify(historyData)
+);
+
+{% endif %}
+
+
+// Dashboard statistics
+
+function updateDashboard() {
+
+    let total = historyData.length;
+
+    let spam = historyData.filter(
+        item => item.type === 'spam'
+    ).length;
+
+    let safe = historyData.filter(
+        item => item.type === 'ham'
+    ).length;
+
+    document.getElementById('totalCount').textContent = total;
+    document.getElementById('spamCount').textContent = spam;
+    document.getElementById('safeCount').textContent = safe;
+
+    document.getElementById('spamRate').textContent =
+        total ? Math.round(spam / total * 100) + '%' : '0%';
+}
+
+
+// Display history
+
+function displayHistory() {
+
+    let container = document.getElementById('historyList');
+
+    if(historyData.length === 0) {
+
+        container.innerHTML =
+            '<div class="empty">No messages analyzed yet.</div>';
+
+        return;
+    }
+
+    container.innerHTML = historyData.map(item => {
+
+        let safeMessage = String(item.message)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+
+        let safeResult = String(item.result)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+
+        return `
+            <div class="history-item">
+
+                <span class="tag ${item.type}">
+                    ${safeResult}
+                </span>
+
+                <p>${safeMessage}</p>
+
+                <small>Spam probability: ${item.score}%</small><br>
+
+                <small>${item.time}</small>
+
+            </div>
+        `;
+
+    }).join('');
+
+}
+
+
+// Clear history
+
+function clearHistory() {
+
+    if(confirm('Are you sure you want to clear all history?')) {
+
+        historyData = [];
+
+        localStorage.removeItem('spamguardHistory');
+
+        updateDashboard();
+
+        displayHistory();
+    }
+
+}
+
+
+// Initial load
+
+updateDashboard();
+
+</script>
+
+</body>
+</html>
